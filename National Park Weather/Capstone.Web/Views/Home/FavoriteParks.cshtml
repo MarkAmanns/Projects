@@ -1,0 +1,24 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int parkPosition = 1;
+}
+@model List<Capstone.Web.Models.FavoriteParks>
+
+@if (Model.Count == 0)
+    {
+        <h1>No Parks have been voted on, make your voice heard in the daily survey!</h1>
+    }
+@foreach (var park in Model)
+{
+    if (park.FavoriteParksCount > 0)
+    {
+        <h1>#@parkPosition</h1>
+        string parkImg = park.ParkCode + ".jpg";
+        <div class="parklist" id="faveParkList">
+            <a href="~/Home/Detail/@park.ParkCode"><img src="~/Content/ParkImages/@parkImg" /></a>
+            <a style="text-decoration:none; color: black;" href="~/Home/Detail/@park.ParkCode"><h1>@park.ParkName</h1></a>
+            <div>Number of Votes: @park.FavoriteParksCount</div>
+        </div>
+        parkPosition++;
+    }
+}

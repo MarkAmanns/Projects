@@ -1,0 +1,171 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Capstone.Web.Models.ParkDetailViewModel
+@section Title{
+    @Model.ParkDetails.ParkName
+}
+@{
+    /* Initializes variables for use in code later on */
+    string parkImg = Model.ParkDetails.ParkCode + ".jpg";
+    string forecastImg;
+    string tempName = "° F";  // degree is "&#176;"
+    double tempTooHigh = 75;
+    double tempTooLow = 20;
+    string tempCheckedC = "checked = \"checked\"";
+    string tempCheckedF = "";
+    bool firstDay = true;
+    bool helperUsed = false;
+    /* Converts temperature if Celsius is specified */
+    Model.ShowTemps();
+    if (Model.TempType == 'C')
+    {
+        tempName = "° C";  // degree is "&#176;"
+        tempCheckedC = "";
+        tempCheckedF = "checked = \"checked\"";
+    }
+}
+
+<div class="detail">
+    <div>
+        <img src="~/Content/ParkImages/@parkImg" />
+        <div class="quote">
+            <div>@Model.ParkDetails.InspirationalQuote</div>
+            <div>-@Model.ParkDetails.InspirationalQuoteSource</div>
+        </div>
+    </div>
+    @{
+        string acreage = String.Format("{0:n0}", Model.ParkDetails.Acreage);
+        string campsites = String.Format("{0:n0}", Model.ParkDetails.NumberOfCampsites);
+        string visitors = String.Format("{0:n0}", Model.ParkDetails.AnnualVisitorCount);
+    }
+    <h1>@Model.ParkDetails.ParkName</h1>
+    <h3>@Model.ParkDetails.State</h3>
+    <div class="info">
+        <div>Acreage: @acreage acres</div>
+        <div>Elevation: @Model.ParkDetails.ElevationInFeet ft.</div>
+        <div>Miles of Trail: @Model.ParkDetails.MilesOfTrail</div>
+        <div>Number of Campsites: @campsites</div>
+        <div>Climate: @Model.ParkDetails.TypeOfClimate</div>
+        <div>Year Founded: @Model.ParkDetails.YearFounded</div>
+        <div>Annual Visitor Count: @visitors</div>
+        <div>Number of Animal Species: @Model.ParkDetails.NumberOfAnimalSpecies</div>
+        <div>Entry Fee: @Model.ParkDetails.EntryFee.ToString("C")</div>
+    </div>
+    <br />
+    <div>@Model.ParkDetails.ParkDescription</div>
+</div>
+
+<div class="forecast">
+
+    @foreach (var weatherDay in Model.Forecast.FiveDayForecast)
+    {
+        if (weatherDay.Forecast == "partly cloudy")
+        {
+            forecastImg = "partlyCloudy.png"; /* Partly Cloudy was two words in the DB, so rather than
+                                                 change it, it's just hardcoded in.*/
+        }
+        else
+        {
+            forecastImg = weatherDay.Forecast + ".png";
+        }
+
+        if (firstDay == true) /* Changes display of information if the weather is for the current day */
+        {
+            <div class="firstDay">
+                <h2>Today</h2>
+                <ul>
+                    <li><img src="~/Content/WeatherImages/@forecastImg" /></li>
+                    <li id="high">High: @weatherDay.ShowHigh@tempName</li>
+                    <li id="low">Low: @weatherDay.ShowLow@tempName</li>
+                    @if (Model.Advice.ContainsKey(weatherDay.Forecast))
+                    {
+                        <li id="advice">@Model.Advice[weatherDay.Forecast]</li>
+                    }
+                    @if (weatherDay.High > tempTooHigh)
+                    {
+                        <li id="advice">@Model.Advice["hot"]</li>
+                    }
+
+                    @if (weatherDay.Low < tempTooLow)
+                    {
+                        <li id="advice">@Model.Advice["cold"]</li>
+                    }
+
+                    @if (weatherDay.High - weatherDay.Low > 20)
+                    {
+                        <li id="advice">@Model.Advice["difference"]</li>
+                    }
+                </ul>
+            </div>
+            firstDay = false;
+        }
+        else
+        {
+            <div class="tooltip">
+                <ul>
+                    <li><img src="~/Content/WeatherImages/@forecastImg" /></li>
+                    <li id="high">High: @weatherDay.ShowHigh@tempName</li>
+                    <li id="low">Low: @weatherDay.ShowLow@tempName</li>
+
+                    @if (Model.Advice.ContainsKey(weatherDay.Forecast))
+                    {
+                        if (!helperUsed)
+                        {
+                            <li class="helperText">Hover for more info</li>
+                            helperUsed = true;
+                        }
+                        <li class="tooltiptext">@Model.Advice[weatherDay.Forecast]</li>
+                    }
+
+                    @if (weatherDay.High > tempTooHigh)
+                    {
+                        if (!helperUsed)
+                        {
+                            <li class="helperText">Hover for more info</li>
+                            helperUsed = true;
+                        }
+                        <li class="tooltiptext">@Model.Advice["hot"]</li>
+                    }
+
+                    @if (weatherDay.Low < tempTooLow)
+                    {
+                        if (!helperUsed)
+                        {
+                            <li class="helperText">Hover for more info</li>
+                            helperUsed = true;
+                        }
+                        <li class="tooltiptext">@Model.Advice["cold"]</li>
+                    }
+
+                    @if (weatherDay.High - weatherDay.Low > 20)
+                    {
+                        if (!helperUsed)
+                        {
+                            <li class="helperText">Hover for more info</li>
+                            helperUsed = true;
+                        }
+                        <li class="tooltiptext">@Model.Advice["difference"]</li>
+                    }
+
+                    @if (!helperUsed)  // ensure same width for days with no advice
+                    {
+                        <li class="tooltiptext"> </li>
+                    }
+
+                    @{  // reset for next forecast day
+                        helperUsed = false;
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+<div class="conversionForm">
+    <a name="weather"></a> @*/* Form implements an anchor to keep your place on the page after changing the temp type */*@
+    <form method="post" action="~/Home/Detail/@Model.ParkDetails.ParkCode#weather">
+        <input type="radio" id="tempType" name="tempType" value="C" style="display:none" @tempCheckedC />
+        <input type="radio" id="tempType" name="tempType" value="F" style="display:none" @tempCheckedF />
+        <button href="weather" class="button">Convert to @(Model.TempType == 'C' ? "Fahrenheit" : "Celsius")</button>
+    </form>
+</div>

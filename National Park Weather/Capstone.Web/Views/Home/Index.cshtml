@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Title {
+    Home
+    }
+
+@model Capstone.Web.Models.ParkList
+@foreach (var park in Model.Parks)
+{
+    string parkImg = park.ParkCode + ".jpg";
+    <div class="parklist">
+        <a href="~/Home/Detail/@park.ParkCode"><img src="~/Content/ParkImages/@parkImg" /></a>
+        <a style="text-decoration:none; color: black;" href="~/Home/Detail/@park.ParkCode"><h1>@park.ParkName</h1></a>
+        <div class="description">@park.ParkDescription</div>
+    </div>
+}

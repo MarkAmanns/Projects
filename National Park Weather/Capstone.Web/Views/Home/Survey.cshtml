@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Capstone.Web.Models.SurveyViewModel
+<div>
+    <h1>Vote for your favorite National Park!</h1>
+    <form method="post" action="@Url.Action("Survey", "Home")">
+        <div>
+            <div class="formheader">Please Select a Park</div>
+            <select name="ParkCode">
+                @foreach (var pair in Model.Codes)
+                {
+                    <option value="@pair.Key">@pair.Value</option>
+                }
+            </select>
+        </div>
+        <br />
+
+        <div>
+            <div class="formheader">@Html.Label("Enter Your Email")</div>
+            @Html.TextBox("EmailAddress", "", new { placeholder = "Enter Your Email" })
+            @Html.ValidationMessage("EmailAddress", new { @class = "errorText" })
+        </div>
+        <br />
+
+        <div>
+            <div class="formheader">State of residence</div>
+            <select name="State">
+                @foreach (var state in Model.States)
+                {
+                    <option value="@state">@state</option>
+                }
+            </select>
+        </div>
+        <br />
+
+        <div class="formheader">Activity level</div>
+        <div>
+            @Html.Label("Inactive")
+            @Html.RadioButton("ActivityLevel", "Inactive", true)<br />
+            @Html.Label("Sedentary")
+            @Html.RadioButton("ActivityLevel", "Sedentary")<br />
+            @Html.Label("Active")
+            @Html.RadioButton("ActivityLevel", "Active")<br />
+            @Html.Label("Extremely Active")
+            @Html.RadioButton("ActivityLevel", "Extremely Active")<br />
+        </div>
+        <br />
+        <button>Submit</button>
+    </form>
+
+</div>

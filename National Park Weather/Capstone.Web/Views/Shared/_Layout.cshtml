@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@RenderSection("Title", false)</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/Styles.css">
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/logo.png" />
+        <ul class="navbar">
+            <li><a href="~/Home/Index">Home</a></li>
+            <li><a href="~/Home/Survey">Survey</a></li>
+            <li><a href="~/Home/FavoriteParks">Favorite Parks</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        @RenderBody()
+        <div class="nameToolTip">
+            <div class="names">Site Developed by Tony Slack and Mark Amanns</div>
+        </div>
+    </div>
+    
+</body>
+</html>
